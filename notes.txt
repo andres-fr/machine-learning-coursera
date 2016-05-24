@@ -1,0 +1,1064 @@
+############################################################################################
+########### INTRODUCTION
+############################################################################################
+supervised learning: we feed the right inputs
+1) regression: predict continuous output from discrete inputs.Linear, poly, splines? (casa)
+2) classification problem: predict discrete output. also possible with infinite categories and inputs (tipos de tumor)
+
+unsupervised: data has no "labels"
+1) clustering: automatically find structure in a normalized set of data
+
+
+############################################################################################
+########### WEEK 1: LINEAR REGRESSION WITH ONE VARIABLE
+############################################################################################
+
+### univariate linear regression:
+trainings set: set of size/value pairs, our goal is to learn from this data how to predict values of houses.
+    notation: m->number of training examples, x->, y.>
+    workflow: we feed the training set to the learning algo, which creates the function h(x)= µ0+µ1*x
+    h means hypothesis
+
+*µ0, µ1 are the parameters of the model. µ1=slope, pendiente. Idea: choose them so that h(x) is close to y for all training examples
+    formalized: minimize over µ1, µ2 the sum over i from 1 to m of  (h(x)-y)²
+
+COST FUNCTION is also called the squared error function, J(µ1, µ2) = 1/2m*sum_over_i( (h(x)-y)²)
+*contour plots/figures: isotensor
+
+### gradient descent: partial derivation equations.
+       2 extensions: for 2 vars there is a direct solution, and grad descent works also for many vars.
+
+
+############################################################################################
+########### WEEK 1: LINEAR ALGEBRA REVIEW
+############################################################################################
+
+### ALGEBRA: prediction = data matrix * parameters [[1, 350],              [hip1
+                                                    [1, 50],      [µ1       hip2
+						    [1, 30],   X  µ2]  =   hip3
+						    [1, 123]]               hip4]
+compiting hypotheses: data matrix * parameter matrix => hip matrix. each column of the par matrix is one hypfun, each colum of the result is one compiting hyp
+
+*singular/degenerate matrix: doesn't have inverse
+
+
+
+############################################################################################
+########### WEEK 2: LINEAR REGRESSION WITH MULTIPLE VARIABLES
+############################################################################################
+
+### multivariate linear regression: n features(variables)
+CONVENIENCE: the artificial x0 feature, is always 1
+each x²,x³... entry is an n+1 dimensional vector (because of the extra x0 feature)
+now hypothesis is h(x)=µ0+µ1x1+µ2x2...+µnxn and can be expressed as trans(µvector)*xvector
+*trick: scale the features, normalize to -1<x<1 aprox generally. mean normalization: substract so that mean is around zero (except for x0). general formula x_norm = (x-x_mean)/(xmax-xmin)
+### multivar grad descent partial equations: µ_j :=µ_j - @*1/m*sum_over_i{(h(x^i)-y^i)*x_j^i
+
+
+### polynomial regression: tweaked features, for example h(x) = µ1+ µ2x + µ3x² + µ4x³ where x can be area=depth*length. Scaling is here very important! range grows exptl.
+
+### normal equation: analytical minimum solution for the parameter vector theta=pinv(X'*X)*X'*y
+    -no need to scaling
+    -y is the m-dimensional vector of house prices
+    -X is the m*n+1 design matrix, with first column all 1, second column all x_1 etc
+    -one step, no alpha. but becomes slow for big n (around n=10000 consider using grad descent)
+*non invertible? redundant or too many features?
+
+
+############################################################################################
+########### WEEK 2: OCTAVE TUTORIAL
+############################################################################################
+
+### octave tutorial:
+  -basic operations
+  -moving data around
+  -computing on data
+  -plotting data
+  -control statements, func definitions
+  -vectorization
+
+
+## (local-set-key (kbd "C-, <C-return>") 'octave-send-block)
+## (local-set-key (kbd "<C-M-return>") 'octave-send-line)
+## C-c M-l clear octave repl
+
+## C-h a           octave-lookfor
+## C-h d           octave-help
+
+## <remap> <down-list>             smie-down-list
+
+## C-c C-a         octave-beginning-of-line
+## C-c C-e         octave-end-of-line
+## C-c C-f         octave-insert-defun
+## C-c TAB         Prefix Command
+## C-c C-l         octave-source-file
+## C-c C-n         octave-next-code-line
+## C-c C-p         octave-previous-code-line
+## C-c ESC         Prefix Command
+## C-c /           smie-close-block
+## C-c ;           octave-update-function-file-comment
+## C-c ]           smie-close-block
+
+## C-M-j           octave-indent-new-comment-line
+## M-.             octave-find-definition
+
+## C-M-q           prog-indent-sexp
+
+## C-c TAB C-a     octave-send-buffer
+## C-c TAB C-b     octave-send-block
+## C-c TAB C-f     octave-send-defun
+## C-c TAB C-k     octave-kill-process
+## C-c TAB C-l     octave-send-line
+## C-c TAB C-q     octave-hide-process-buffer
+## C-c TAB C-r     octave-send-region
+## C-c TAB C-s     octave-show-process-buffer
+## C-c TAB a       octave-send-buffer
+## C-c TAB b       octave-send-block
+## C-c TAB f       octave-send-defun
+## C-c TAB k       octave-kill-process
+## C-c TAB l       octave-send-line
+## C-c TAB q       octave-hide-process-buffer
+## C-c TAB r       octave-send-region
+## C-c TAB s       octave-show-process-buffer
+
+## C-c C-M-h       octave-mark-block
+
+
+
+
+### BASIC OPERATIONS
+%% Change Octave prompt
+PS1('>> ');
+%% Change working directory in windows example:
+cd 'c:/path/to/desired/directory name'
+%% Note that it uses normal slashes and does not use escape characters for the empty spaces.
+
+%% elementary operations
+5+6
+3-2
+5*8
+1/2
+2^6
+1 == 2  % false
+1 ~= 2  % true.  note, not "!="
+1 && 0
+1 || 0
+xor(1,0)
+
+
+%% variable assignment
+a = 3; % semicolon suppresses output
+b = 'hi';
+c = 3>=1;
+
+% Displaying them:
+a = pi
+disp(a)
+disp(sprintf('2 decimals: %0.2f', a))
+disp(sprintf('6 decimals: %0.6f', a))
+format long
+a
+format short
+a
+
+
+%%  vectors and matrices
+A = [1 2; 3 4; 5 6]
+
+v = [1 2 3]
+v = [1; 2; 3]
+v = [1:0.1:2]  % from 1 to 2, with stepsize of 0.1. Useful for plot axes
+v = 1:6        % from 1 to 6, assumes stepsize of 1 (row vector)
+
+C = 2*ones(2,3)  % same as C = [2 2 2; 2 2 2]
+w = ones(1,3)    % 1x3 vector of ones
+w = zeros(1,3)
+w = rand(1,3)  % drawn from a uniform distribution
+w = randn(1,3) % drawn from a normal distribution (mean=0, var=1)
+w = -6 + sqrt(10)*(randn(1,10000));  % (mean = -6, var = 10) - note: add the semicolon
+hist(w)     % plot histogram using 10 bins (default)
+hist(w,50)  % plot histogram using 50 bins
+% note: if hist() crashes, try "graphics_toolkit('gnu_plot')"
+
+I = eye(4)    % 4x4 identity matrix
+
+% help function
+help eye
+help rand
+help help
+
+
+
+### MOVING DATA AROUND
+%% dimensions
+sz = size(A) % 1x2 matrix: [(number of rows) (number of columns)]
+size(A,1)  % number of rows
+size(A,2)  % number of cols
+length(v)  % size of longest dimension
+
+
+%% loading data
+pwd    % show current directory (current path)
+cd 'C:\Users\ang\Octave files'   % change directory
+ls     % list files in current directory
+load q1y.dat    % alternatively, load('q1y.dat')
+load q1x.dat
+who    % list variables in workspace
+whos   % list variables in workspace (detailed view)
+clear q1y       % clear command without any args clears all vars
+v = q1x(1:10);  % first 10 elements of q1x (counts down the columns)
+save hello.mat v;   % save variable v into file hello.mat
+save hello.txt v -ascii; % save as ascii
+% fopen, fread, fprintf, fscanf also work  [[not needed in class]]
+
+%% indexing
+A(3,2)  % indexing is (row,col)
+A(2,:)  % get the 2nd row.
+        % ":" means every element along that dimension
+A(:,2)  % get the 2nd col
+A([1 3],:) % print all  the elements of rows 1 and 3
+
+A(:,2) = [10; 11; 12]     % change second column
+A = [A, [100; 101; 102]]; % append column vec
+A(:) % Select all elements as a column vector.
+
+% Putting data together
+A = [1 2; 3 4; 5 6]
+B = [11 12; 13 14; 15 16] % same dims as A
+C = [A B]  % concatenating A and B matrices side by side
+C = [A, B] % concatenating A and B matrices side by side
+C = [A; B] % Concatenating A and B top and bottom
+
+
+
+### COMPUTING ON DATA
+
+%% initialize variables
+A = [1 2;3 4;5 6]
+B = [11 12;13 14;15 16]
+C = [1 1;2 2]
+v = [1;2;3]
+
+x = [4; 4]
+
+A.^2
+2
+
+%% matrix operations
+A * C  % matrix multiplication
+A .* B % element-wise multiplication
+% A .* C  or A * B gives error - wrong dimensions
+A .^ 2 % element-wise square of each element in A
+1./v   % element-wise reciprocal
+log(v)  % functions like this operate element-wise on vecs or matrices
+exp(v)
+abs(v)
+
+-v  % -1*v
+
+v + ones(length(v), 1)
+% v + 1  % same
+
+A'  % matrix transpose '
+
+%% misc useful functions
+
+% max  (or min)
+
+a = [1 15 2 0.5]
+val = max(a)
+[val,ind] = max(a) % val -  maximum element of the vector a and index - index value where maximum occur
+val = max(A) % if A is matrix, returns max from each column
+
+% compare values in a matrix & find
+a < 3 % checks which values in a are less than 3
+find(a < 3) % gives location of elements less than 3
+A = magic(3) % generates a magic matrix - not much used in ML algorithms
+[r,c] = find(A>=7)  % row, column indices for values matching comparison
+
+% sum, prod
+sum(a)
+prod(a)
+floor(a) % or ceil(a)
+max(rand(3),rand(3))
+max(A,[],1) -  maximum along columns(defaults to columns - max(A,[]))
+max(A,[],2) - maximum along rows
+A = magic(9)
+sum(A,1)
+sum(A,2)
+sum(sum( A .* eye(9) ))
+sum(sum( A .* flipud(eye(9)) ))
+
+
+% Matrix inverse (pseudo-inverse)
+pinv(A)        % inv(A'*A)*A'
+
+
+### PLOTTING DATA
+
+
+%% plotting
+t = [0:0.01:0.98];
+y1 = sin(2*pi*4*t);
+plot(t,y1);
+y2 = cos(2*pi*4*t);
+hold on;  % "hold off" to turn off
+plot(t,y2,'r');
+xlabel('time');
+ylabel('value');
+legend('sin','cos');
+title('my plot');
+print -dpng 'myPlot.png'
+close;           % or,  "close all" to close all figs
+figure(1); plot(t, y1);
+figure(2); plot(t, y2);
+figure(2), clf;  % can specify the figure number
+subplot(1,2,1);  % Divide plot into 1x2 grid, access 1st element
+plot(t,y1);
+subplot(1,2,2);  % Divide plot into 1x2 grid, access 2nd element
+plot(t,y2);
+axis([0.5 1 -1 1]);  % change axis scale
+
+%% display a matrix (or image)
+figure;
+imagesc(magic(15)), colorbar, colormap gray;
+% comma-chaining function calls.
+a=1,b=2,c=3
+a=1;b=2;c=3;
+
+
+
+### CONTROL STATEMENTS
+
+v = zeros(10,1);
+for i=1:10,
+    v(i) = 2^i;
+end;
+% Can also use "break" and "continue" inside for and while loops to control execution.
+
+i = 1;
+while i <= 5,
+  v(i) = 100;
+  i = i+1;
+end
+
+i = 1;
+while true,
+  v(i) = 999;
+  i = i+1;
+  if i == 6,
+    break;
+  end;
+end
+
+if v(1)==1,
+  disp('The value is one!');
+elseif v(1)==2,
+  disp('The value is two!');
+else
+  disp('The value is not one or two!');
+end
+
+
+To create a function, type the function code in a text editor
+(e.g. gedit or notepad), and save the file as "functionName.m"
+
+Example function:
+
+function y = squareThisNumber(x)
+
+y = x^2;
+
+To call the function in Octave, do either:
+
+1) Navigate to the directory of the functionName.m file and call the function:
+
+    % Navigate to directory:
+    cd /path/to/function
+
+    % Call the function:
+    functionName(args)
+
+2) Add the directory of the function to the load path and save it:
+
+    % To add the path for the current session of Octave:
+    addpath('/path/to/function/')
+
+    % To remember the path for future sessions of Octave, also do:
+    savepath
+
+Octave's functions can return more than one value:
+
+    function [y1, y2] = squareandCubeThisNo(x)
+    y1 = x^2
+    y2 = x^3
+
+Call the above function this way:
+
+    [a,b] = squareandCubeThisNo(x)
+
+
+
+
+############################################################################################
+########### WEEK 3: LOGISTIC REGRESSION AND REGULARIZATION (classification problems / smoothen for few data)
+############################################################################################
+
+classification: positive/negative class, presence/absence of something
+ttwo-class=binary, there is also multi-class classification problem
+
+### BAD IDEA: linear regression+threshold at 0.5: if h(X)=theta'*X >= 0.5, y=1. problem: data far away has too much weight on the threshold point, but doesnt really give any information, so "closest line" is a bad paradigm for modelling this
+
+
+### logistic regression: is a CLASSIFICATION algo
+
+### hyp representation: sigmoid/logistic fn: g(z)= 1/(1+e^-z), where z is real (in our case is theta'*x)
+    and is interpreted as P(y=1|x;theta) prob. of positive class given features and parameters
+
+### decision boundary: we can choose 0.5 as threshold, so y=1 when z is non-negative. f.e. given theta=[-3;1;1]
+    it would be interpreted like: y=1 if -3+x1+x2>=0 => x1+x>=3 this is a line through (3,0) and (0, 3): the DECISION BOUNDARY
+    which is a property of the hypothesis and its parameters, and NOT of the dataset
+    also non-linear: x'=[1,x1,x2,x1^2,x2^2] and theta'= [-1,0,0,1,1] means the unity circle: y=1 if x1^2+x2^2>=1
+
+### cost function: cost(h,(x), y)= if (y==1) then -log(h(x)) else -log(1-h(x)) desirable properties: when x==y, cost=0. when x approaches the opposite, cost->+inf so highly penalizes error
+    it can be shown that this fn has no local minimums but a global one, anallitically findable (statistics: maximum likelyhood destination)
+
+###simplified cost fn: -y*log(h(x))-(1-y)*log(1-h(x)). so J(theta)= -1/m*sum(i=1,i<=m; [y*log(h(x))+(1-y)*log(1-h(x))]) the minus sign at the beg.
+
+*reminder: so once we have our thetas(see below) just make predictions with h(x)=1/(1+e^-(theta'*x)),  P(y=1|x;theta)
+
+### LOG. REG. GRAD. DESCENT: theta_j := theta_j - alpha/m* sum(i=1,i<=m; (h(x¹)-y¹)*x_j¹) basically the sum of the differences times the corresponding training x
+    this is the same as by lin.reg. but  and h(x) is 1/... instead ok theta'*x
+    FEATURE SCALING IS HERE IMPORTANT
+
+
+### advanced optimization: given a way to compute J(theta) and its derivate, we can do grad.descent. but also Conjugate gradient, BFGS and L-BFGS. advantage: no need manually set alpha, faster...
+      "Conjugate gradient", "BFGS", and "L-BFGS" are more sophisticated, faster ways to optimize theta instead of using gradient descent.
+      A. Ng suggests you do not write these more sophisticated algorithms yourself (unless you are an expert in numerical computing) but use them pre-written from libraries. Octave provides them.
+
+      We first need to provide a function that computes the following two equations:
+
+      J(θ), ∂/∂θj*J(θ)
+
+      We can write a single function that returns both of these:
+
+      function [jVal, gradient] = costFunction(theta)
+        jval = [...code to compute J(theta)...];  % f.e. (theta(1)-5)²+(theta(2)-5)²
+        gradient = [...code to compute derivative of J(theta)...]; % f.e. gradient = [2*(theta(1)-5); 2*(theta(2)-5)]
+      end
+
+      Then we can use octave's "fminunc()" optimization algorithm along with the "optimset()" function that creates an object containing the options we want to send to "fminunc()".
+      (Note: the value for MaxIter should be an integer, not a character string - errata in the video at 7:30)
+
+      options = optimset('GradObj', 'on', 'MaxIter', 100);
+      initialTheta = zeros(2,1);
+      [optTheta, functionVal, exitFlag] = fminunc(@costFunction, initialTheta, options); %% inittheta must have at least 2 dimensions
+
+      We give to the function "fminunc()" our cost function, our initial vector of theta values, and the "options" object that we created beforehand.
+
+
+### log.reg. for multiclass classification: email?{work,hobby,family,friends} where y€{1,2,...}.
+    how? one-vs-all: we build n different h(x), each class gets y=1, all others y=0. an finally we pick the class that maximizesits h(x)
+
+
+
+########### REGULARIZATION IN LINEAR AND LOGISTIC REGRESSION
+
+### the problem of overfitting (high variance): opposite to underfitting(high bias): with too many features, it may fit very well but fail to generalize new examples (like lagrange interp)
+    addressing: 1)reduce features(manually, model-selection algo(later on)) or 2)regularization: keep parameters but reduce magnitude of thetas
+
+### how: cost function: minimize theta in 1/2m*sum(h(x)-y)² + lambda*sum(all thetas² except theta_0) lambda is the reg. parameter, makes the thetas (EXCEPT THETA_0 to be smaller. if too large, h(x)=theta_0=>underfitting
+
+
+### regularized lin reg
+  #grad desc: IF NOT THETA_0 WHICH REMAINS THE SAME
+          theta_j := theta_j - alpha*[1/m* sum(i=1,i<=m; (h(x¹)-y¹)*x_j¹) + lambda/m*theta_j] % is the same as
+          theta_j := theta_j*(1-alpha*lambda/m) - [alpha/m* sum(i=1,i<=m; (h(x¹)-y¹)*x_j¹)]
+          so we have the classic fn with the extra term 1-alpha*lambda/m, whick is close to and always less than 1
+
+  # norm eq: theta = (X'*X + lambda*[n+1th eye but first column all zeros])^-1* X'*y
+    IF LAMBDA>0, THE NORMAL EQUATION IS ALWAYS POSSIBLE BECAUSE X'*X+LAMBDA[...] IS ALWAYS INVERTIBLE(it can be shown)
+
+
+### regularized log. reg
+new cost fn for h(x)= -y*log(h(x))-(1-y)*log(1-h(x))    J(theta)= -1/m*sum(i=1,i<=m; [y*log(h(x))+(1-y)*log(1-h(x))]) + lambda/2m*sum(all thetas² except theta_0)
+grad desc looks identical as in linreg, but still h(x) is here sigmoid
+theta_j := theta_j - alpha*[1/m* sum(i=1,i<=m; (h(x¹)-y¹)*x_j¹) + lambda/m*theta_j] % is the same as
+theta_j := theta_j*(1-alpha*lambda/m) - [alpha/m* sum(i=1,i<=m; (h(x¹)-y¹)*x_j¹)]
+
+
+### advanced optimization:
+jval = -1/m*sum(i=1,i<=m; [y*log(h(x))+(1-y)*log(1-h(x))]) + lambda/2m*sum(all thetas² except theta_0)
+gradient  = [1/m* sum(i=1,i<=m; (h(x¹)-y¹)*x_0¹);   1/m* sum(i=1,i<=m; (h(x¹)-y¹)*x_1¹) + lambda/m*theta_1;   and so on]; so the 1st term has no lambda like all others
+
+
+
+
+
+############################################################################################
+########### WEEK 4: NEURAL NETWORK REPRESENTATION
+############################################################################################
+
+### non-linear hyp: the techniques so far are not OK for computing non-linear hyp. for big n, since the combinatorics (x_1³, x_1*x_17*x_32) grow exponentially and blow up really soon. NN are good for that
+
+### neurons and the brain: vernon mountcastle single algo thesis, examples
+
+### model representation I: body, dendrites(inputs), axon(output). LOGISTIC UNIT: [x1, x2... inputs]->[body]->h(x)=sigmoid(theta’*x) AS OUTPUT
+       **sometimes add x0=1 as "bias unit"
+       h(x) is the (sigmoid/logistic)ACTIVATION FN.
+       theta are the parameters, also called WEIGHTS
+
+    NETWORK architecture, units example:
+    3 layers: input [(x0), x1, x2, x3] each x connected to each neuron of the hidden[(a0), a1, a2, a3] all connected to the output layer(b) which outputs h(x). x0, a0... BIAS always 1
+    for this model, the mat. definition of the operations goes like this:
+    ->a_i¹ = "activation index" of unit i in layer ¹
+    ->THETA¹ = matrix of weights controlling function mapping from layer ¹ to layer ²
+    if network has a units in layer j and b units in layer j+1, THETA^j will be of dimensions b*(a+1)
+    example:
+    a_1²=g(theta_10¹*x_0 + theta_11¹*x_1 + theta_12¹*x_2 + theta_13¹*x_3)  %% so the matrix is 3x4: 3 neurons/rows, 3+bias parameters
+    a_2²=g(theta_20¹*x_0 + theta_21¹*x_1 + theta_22¹*x_2 + theta_23¹*x_3)
+    a_2²=g(theta_30¹*x_0 + theta_31¹*x_1 + theta_32¹*x_2 + theta_33¹*x_3)
+
+
+    h(x) = a_1³ = g(theta_10²*a_0 + theta_11²*a_1 + theta_12²*a_2 + theta_13²*a_3)  %% this matrix is 1x4: 1 neuron, 3+bias hidden neurons
+
+### vectorized representation of FORWARD PROPAGATION (computing the sucesive activation vectors)
+    a as 3d vector, a=sigmoid(z) where z=THETA*x being x a 4dim. vector. THEN ADD a0 as bias unit, so a becomes 4dim and THETA² 1x4. Theta²*a gives h(x) a real num
+
+
+### EXAMPLES:
+- inputx= [+1, x1, x2] theta=[-30;10; 10]. h(x)=sigmoid(x*theta) is effectively æn x1 AND x2 fn. OR works with theta=[-10;20; 20]. NEGATION: 10*x_0-20*x_1
+-XNOR first hidden computes a1=x1&&x2 [-30, 20, 20], a2=x1NORx2[10, -20, -20]. output layer computes h=a1||a2 [-10, 20, 20] which is XNOR or EQ
+-video of number recon: yann lecun, pioneer, prof. at NYU
+
+### multiclass classification: version of 1-vs-all, where output layer has N units for n classes and h outputs an n-dim vector, where we expect 
+ [1; 0 .... 0] for 1st class and so on. so the training set would look like x,y pairs where x is the image+bias and y is one of those "e" vectors.
+
+
+############################################################################################
+########### WEEK 5: NEURAL NETWORK TRAINING
+############################################################################################
+
+L= #layers
+s_l = # units in layer l. s_L=#output units=K
+binary classification: K=1. multiclass: y€R^K e_1, e_2...
+
+### COST FUNCTION
+#LOGISTIC REGR WAS:  J(theta)= -1/m*sum(i=1,i<=m; [y*log(h(x))+(1-y)*log(1-h(x))]) + lambda/2m*sum(all thetas² except theta_0)
+#this is the same but adding the outputs of each output unit, given by idx k:
+       J(theta)= -1/m*sum(i=1,i<=m; sum(k=1, k<=K [y_k¹*log(h(x¹))_k+(1-y_k¹)*log(1-h(x¹))_k])) + lambda/2m*sum(all thetas² of all matrix except biases) % works anyway regularizing bias
+
+### BACKPROPAGATION FORMULAS:
+    -first we need the idea of "error": delta_j^l = error of unit a_j^l, that is unit j in layer l
+    -so for the output, being L=4 (vectorized): delta^4 = a^4-y. So its simply the diff betw. hypothesis and training value
+    -further, delta3 = (theta3)'*delta4 .* g'(z3) and delta2 = (theta2)'*delta3 .* g'(z2). there is no delta1 because the training input is a reference, therefore makes no sense to change it
+    -we see .* is the elementweise multiplication
+    and g'(z3) is the derivative of sigmoid(theta2*a2)=a3, so kind of the "derivative of a3".It equals a3.*(1-a3) ASSUMING NO REGULARIZATION. same for a2. no delta1
+    
+### BACKPROPAGATION ALGORITHMS:
+    -we have a training set {(x^1, y^1), ... (x^m, y^m)}
+    -fill DELTA^l with zeros for each l (layer). // each DELTA^l has same dimensions as its corresponding THETA^l
+    for i=1 to m:
+        set a^1= x^i // load the current training sample to the NN
+        perform forward-prop to compute all a^l
+        compute delta^L = a^L-y^i // taking y from the current training sample
+        backward compute all other deltas, stopping by delta^2 // since there is no delta^1
+        update all DELTA matrices for every l: DELTA_ij^l := DELTA_ij^l+(a_j^l*delta_i^(l+1)) ==> VECTORIZED: DELTA^l := DELTA^l+ (delta^(l+1)*(a^l)')
+    //end of the for loop
+    D_ij^l= 1/m * DELTA_ij^l  +  if (j!=0) lambda*THETA_ij^l // because if j==0, is the bias term and has no regularization
+    // it can be shown that the partial derivative of J(THETA on THETA_ij^l equals D_ij^l
+    
+### BACKPROPAGATION INTUITION:
+    -so delta_j^l represents the "error" of cost for a_j^l (unit j in layer l) // forthe intuition, you can think of the cost as the quad. diff, or the logistic formula.
+    -formally, is actually the partial derivative of cost(i) on z_j^l, for j!=0, where cost(i)=y^i*log(h(x^i))+(1-y^i)*log(1-h(x^i))
+    -the backwards process is algebraic similar to the forward one: you may also implement (AND IGNORE) the bias deltas if you want, but not necessary
+
+
+### IMPLEMENTATION NOTE: UNROLLING PARAMETERS:
+the cost, fminunc and other funcs take vectors:
+function [jVal, gradient] = costFunction(theta)
+optTheta = fminunc(@costFunction, initialTheta, options)
+
+but in NN we are working with matrices:
+THETA1, 2, 3...
+DELTA1, 2, 3...
+
+solution? since each delta has same dimensions as the corresponding delta, "unroll" them into vectors:
+thetaVec = [THETA1(:); THETA2(:), etc] and same for DELTAVec.
+to get them back, reshape this long vectors: imagine that THETA1=10x11, THETA2=10x11, THETA3=1x11. we would have 231 dimensions:
+Theta1 = reshape(thetaVec(1:110), 10, 11)
+Theta2 = reshape(thetaVec(111:220), 10, 11)
+Theta3 = reshape(thetaVec(221:231), 1, 11)
+and that's it: in costFunction, get thetavec as input parameter, reshape it, get the DELTAS, and unroll them  as the gradientVec output that fminunc will use
+
+### GRADIENT CHECKING:
+for i in 1:n:
+    thetaPlus=theta;
+    thetaMinus=theta;
+    thetaPlus(i) += EPSILON;
+    thetaMinus(i) -= EPSILON;
+    gradApprox(i) = (J(thetaplus) - J(thetaminus)) / (2*EPSILON)
+gradApprox contains an approximation of all derivative, because that formula thetaplus - thetaminus etc is the very definition, for differential epsilon.
+recommended EPSILON about 10^-4. not too little because of numerical problems
+# protocol:
+    calculate DVec with for-backward
+    implement gradcheck, to see if Dvec-gradapprox is close to zero in all entries
+    turn of gradcheck, since it is very cpu-expensive
+
+
+### ZERO INITIALIZATION OR THE PROBLEM OF SIMMETRIC WEIGHTS:
+consider the NN with 3 layers with [3-3-1] units, already counting bias. If we initialize all thetas with zeros will following happen:
+         a_1^2 = 1*0 + x1*0 + x2*0
+         a_2^2 = 1*0 + x1*0 + x2*0 // they will compute same function, therefore ALL UNITS OF a^2 WILL BE THE SAME
+as consequence, also delta_1^2=delta_2^2...etc. So the J derivatives depending on those terms will also be the same.
+that means, the "trained" theta values will be also the same,and ALL UNITS OF THIS HIDDEN LAYER WILL COMPUTE THE SAME FN, which is bad for h(x) since it takes the info of 1 hidden unit.
+
+# SOLUTION: BREAK SYMMETRY WITH RANDOM INITIALIZATION:
+having any realnum close to 0 called f.e. INIT_EPSILON, initialize thetas between [-€, €] like rand(10, 6)*2€ -€
+One effective strategy is to base it on the number of units in the network. A good choice is:
+INIT_EPSILON = sqrt(6)/sqrt(L_in+L_out), where Lin Lout are the number of units in the layers adjacent to corresponding THETA
+
+### PUTTING ALL TOGETHER
+
+# architecture: 1 hidden layer is reasonable, if more normally all te same n. of units (normally the more the better: somewhat bigger as input layer, to 3-4 times that)
+# training a NN, 6 steps: 1-initialize random weights, 2-implement forwardprop. to be able to get h(x), 3-implement costFn, 4-implement backprop, 5-gradientCheckin,
+                          6-gradient optimization with backprop or grad-descent. Turns out that J for NNs is non convex, but this algos work anyway finding good local mins close to the global.
+ 
+
+
+
+############################################################################################
+########### WEEK 6: ADVICE FOR APPLYING MACHINE LEARNING
+############################################################################################
+
+### WHAT TO TRY NEXT:
+    we have regularized linear reg, and not working... what to do?
+    -get more training examples?
+    -try smaller subset of features?
+    -getting additional features?
+    -try polynomial featues?
+    -fiddle with lambda?
+fortunately, we have MACHINE LEARNING DIAGNOSTICS: tests you can run to gain insight what is(nt) working, and gain guidance as how to best improve its performance.
+
+### PREVENT BAD FITTING:
+-there is an automatic way: take a random 30% of the trainig examples as test, and the other 70% as training, being m_test = number of training examples
+       so: compute theta from the training subset, and compute TEST SET ERROR from the test subset.
+           if LINEAR REG: J_test(theta) = 1/(2*m_test) *sum(i=range(1, m_test); (h(x_test)-y_test)^2)
+           if LOGISTIC REG:            = -1/(m_test) * sum(i=range(1, m_test); [y_test^i*log(h(x_test^i))+(1-y_test^i)*log(1-h(x_test^i))])
+           or also MISSCLASIFICATION ERROR: being err(x, y)= IF [h(x)>=0.5 and y==0, OR h(x)<=0.5 and y==1] return 1 ELSE return 0 ||| test error = 1/m_test*sum(i<=m_test; err(x^i, y^i))
+
+### MODEL SELECTION PROBLEM: choose lambda, poly features??-> TRAIN/VALIDATION/TEST SETS
+w
+e have our training data, and different models (f.e. different polynomial expansions from degree d=1 to d=10).
+   1. we train the algo for each model, and get the corresponding theta vectors.
+   2. then we can test them and pick the best.
+BUT WE HAVE THE PROBLEM THAT THE d MODEL THAT WE CHOSE IS FIT TO TEST SET. SO BEST IS TO SPLIT THE INPUTS IN 3 SUBSETS. TRAINIG (60%), CROSS-VALIDATION(20%) AND TEST SET(20%). THEN:
+    1. train algo and get thetas
+    2. choose d based on best performance on cross-validation set
+    3. test generalization with the test set
+SOME PEOPLE MIX THEM, BUT IT IS NOT A GOOD PRACTICE specially for little sets
+
+### DIAGNOSIS BIAS (high bias->underfitting) VS. VARIANCE (high var.->overfitting):
+almost always, performance problems are likely to be because of this.
+
+#taking d= degree of polynomial regression as a variable, we see that J_test decreases like kind of e^(-d), to make a vague idea. But on the other side J_cv, the crossvalidation
+makes like a positive parabola put above J_test. (in the video both are calculated as 1/2m * sum of quadratic deviations). This means:
+      IF BOTH ARE HIGH we have a d too small, this is HIGH BIAS.
+      IF J_cv >> J_test that means our parameters are OVERFITTING the training set, thus failing to cross-validate well.
+
+#taking a lin.regression with regularization, we see that depending on lambda, the J_test and J_cv behave exactly the opposite as depending on d (see last point).
+        This means, for lambda=0, Jtest is very low, and Jcv is high (variance). For very high lambda, both are high (bias). So TO CHOOSE LAMBDA AUTOMATICALLY we must basically
+        minimize J_cv. They arent always so ideal, can be more noisy but bring a good idea of the process. (if manually: try 0, 0.01, 0.02... always x2).
+        This Jtest and Jcv dont have the regularization term, since they dont take part in the learning process.
+
+### LEARNING CURVES: for analyse, also useful to sanity check your algos, or to show their performance.
+We have m on the x axis, and error on f(m). And we plot J_train and J_cv:
+
+   -in the ideal case, Jtrain has almost or no error for few m, and the error raises kind of sqrt(m) but remains low. On the other hand, Jcv starts very high, and drops fast at the
+   beginning, and slower then. Helps to imagine an horizontal line above J_train, and J_cv as simmetric of Jtrain. They both kind of converge on that line, not too close, Jcv normally
+   above Jtrain, and the line is rather low. This means for reasonable amount of m, we trained with good results, and can extrapolate also with similar error.
+   
+   -if bias is high, this horizontal line is going to be higher, and both lines are going to converge to it very closely. This is because of underfitting: The training set never gets
+   the model to adapt good to it (imagine try to model a parabola with linear reg), and, from one point if m increases it only confirms this bad results. And J_cv behaves as bad as the
+   test set, so both end up with similar costs. so IF A LEARNING ALGO SUFFERS FROM HIGH BIAS, GETTING MORE TRAINING DATA WONT BY ITSELF HELP MUCH.
+
+   -if variance is high, Jtest is going to grow with m but remain low, as in the ideal case. On the other hand Jcv is gona decrease but not that much, so the GAP BETWEEN BOTH OF THEM
+   for a reasonable amount of m is distinctive of this case: we are overfitting our training example, and the generalization doesnt work well. IN THIS CASE, GETTING MORE DATA IS LIKELY
+   TO HELP, since they will converge: the more we have, more likely the peculiarities of the training set are going to be generalizable. But this may happen with too huge m.
+
+### SUMMARIZING:
+    -fixes high bias[get additional/poly features, decrease lambda], fixes high variance[get more training samples, remove features, increase lambda]
+    -architecture: more units and layers are likely to be the best option, but they may turn CPU expensive, and we must use regularization since they are very prone to overfitting.
+    to check how many layers/units are best, helps to base the decision on their learning curves and the other diagnosis tools.
+
+############################################################################################
+########### WEEK 6, PART 2: MACHINE LEARNING SYSTEM DESIGN
+############################################################################################
+
+### PRIORITIZING WHAT TO WORK
+
+ON: kind of heterogeneous video
+# building a SPAM classifier: take n words as spam markers, and make x as a 100dim vector, where 1 if the word is present in the email. Y is 1 if the email is spam, 0 otherwise.
+  in the reality 10k to 50k words. How to make it better?
+     -collect more data (f.e. "honeypot" project: lots of controlled email addresses to get many spam)
+     -develop more sophisticated info (not only words in body, or accept mispelly words)
+     It is difficult to know which strategy works best, it helps to know them and what they imply sistematically.
+
+### ERROR ANALYSIS: build quick&dirty system in less than 24h, then manually check the misclassified samples and other test data, and decide where to invest time.
+
+# natural language processing: "stemming", check the "Porter stemmer", may help or not... helps only try and check if works.
+# the importance of numerical evaluation: for big data, is necessary to measure the performance as a single number (like J_cv). SEE NEXT VIDEO:
+
+### ERROR METRICS FOR SKEWED CLASSES (PRECISION/RECALL EVALUATION):
+# SKEWED DATA: when one class is much smaller than others, it becomes very difficult to distinguish a good strategy from the error metrics.
+  f.e., has cancer=0.5%, if we have an algo with 99% accuracy, the simple algo that predicts NO CANCER for everyone is still 99.5% accurate, but is it better?
+  to know that, there is the precision/recall strategy ASSUMING y=1 FOR THE RARE CLASS:
+     -split the data in 2 dimensions: ACTUAL CLASS vs. PREDICTED CLASS, which gives 4 groups: True pos, false pos, false neg, true neg.
+     PRECISION = true pos/total pos, RECALL =  true pos/all pos. If both are high we can be confident that the algo does well. particularly if we predict always y=0, recall is 0.
+
+###TRADEOFF PRECISION/RECALL: the logist.reg decides 1 if h(x)>=0.5. If we raise this THRESHOLD, precision will be bigger, recall smaller. And viceversa.
+F1 SCORE: or just fscore: 2PR/(P+R), to evaluate both of them together. There are other criteria but this is extended and works ok. To check best threshold, check the best F1SCORE.
+
+### THOUGHTS ON DATA:
+    -for huge data, all learning algos tend to perform well, which implies that HAVING THE MOST AMOUNT OF DATA IS BETTER THAN HAVING THE BEST ALGO [Banko and Brill, 2001].
+    -second: has x sufficient data to predict y accurately? one test is GIVEN X CAN A HUMAN EXPERT CONFIDENTLY PREDICT Y?
+If yes, the winning strategy is clear: take an algo with low bias (many parameters or hidden units)=> Jtest is low!! and feed huge data=> Jtest will also be low! WE HAVE PRECISION AND PERFORMANCE
+
+
+############################################################################################
+########### WEEK 7, SUPPORT VECTOR MACHINES (LARGE MARGIN CLASSIFIERS):
+############################################################################################
+SVM is very powerful, widely used in industry and academia: sometimes cleaner and more powerful than LogReg or NNs for complex non-linear data.
+
+###OPTIMIZATION OBJECTIVE:
+COST FN AND C FACTOR:
+the cost function, instead of -log(sigmoid(theta'x)), is going to be: cost_0 if y=0, cost_1 if y=1.
+    cost_0(z) = if (z>=1) 0, else some kind of line up from zero
+    cost_1(z) = if (z<=-1) 0, else some kind of line up from zero
+    
+with the formula for regularized logreg in mind, we change the convention for regularization. instead of minimizing A+lambda*B, here is C*A+B.
+note that C behaves like 1/lambda, but IS NOT EQUIVALENT. We get also rid of the mean 1/m terms, since they form another constant and doesnt change the minimization value.
+so the goal for the SVM is: minimize_over_theta C* [ sum(i=1:m; y^i*cost_1(theta'x^i) + (1-y^i)*cost_0(teta'x^i))  +  0.5*sum(all_squared_thetas EXCEPT BIAS) ]
+
+###LARGE MARGIN INTUITION: sometimes people talk about SVMs as LMclassifiers.
+because of the definition of cost(x), if y=1, we want cost(x)>=1, or <-1 for y=0.
+Intuition example, for C VERY LARGE, and linearly separable data: takes the line that has the biggest margin. With outliers, also takes them into account.
+This is a consequence of the minimization problem and the large C: minimize CA+B makes A close to 0. And b? sum all squared thetas is THE NORM OF THETA SQUARED.
+And if we plot all x and theta as vectors, the prediction is an INNER PRODUCT: theta'*x = p*||theta||, being p the PROJECTION of x onto theta.
+Lastly, the division boundary is perp. to theta and goes through its origin.
+
+With all this it can be explained why the SVM with large C takes the boundary with large margins: all p*||theta|| should be more than +1 distance from the boundary,
+so that the costs are minimized. If the p vectors are little, we need a very large theta vector, but we are still minimizing B! that requires a small theta vector.
+So minimizing A and B requires the largest possible p's with the smallest possible theta: this happens when the boundary finds an optimum margin to all x samples.
+
+
+
+### KERNELS: A DIFFERENT/BETTER CHOICE OF FEATURES THAN POLYNOMIALS FOR COMPLEX NON-LINEAR DATA:
+
+#LANDMARKS AND SIMILARITY/KERNEL FN: Given x, compute new feature depending on proximity to landmarks l^1, l^2, l^3: 
+           f.e. this GAUSSIAN KERNEL FN: similarity(x, l^i)=exp(-(||x-l^i||²) /(2*sigma²))). also k(x, l^i): is ->1 when x->l, and ->0 when x is far from l.
+           when sigma gets bigger, the diff x-l grows slower, and e^(-diff) gets down slower. So the gaussian bell becomes more spread out.
+#COMPUTE HYPOTHESIS: h(x) is 1, when theta_0+theta1*f1+theta2*f2+theta3*f3>=0, AND THE F FUNCTION IS f_1 = similarity(x, l^1)
+         so depending on how we set the landmarks and the WEIGHT that we give to them, h(x) is going to predict 1 IF THE SUM OF ALL PROXIMITIES IS ABOVE ZERO.
+         This allows very complex predictions.
+# HOW TO MAKE THE PREDICTION IF WE HAVE THE THETAS (choose the landmarks, and other kernel fns):
+    1) PUT ONE LANDMARK PER TRAINING SAMPLE.
+    2) FOR EACH X SAMPLE, AN f VECTOR with m+1 DIMENSIONS, containing f_0=1, and the respective f^i=similarity(x, l^i) weights. There is going to be a weight=1, when l=x
+    3) PREDICT 1 IF theta'*f>=0.
+# HOW TO TRAIN THE THETAS: with the minimization of CA+B shown above, with one twist: WE USE THE F VECTORS NOT THE Xs. so:
+    minimize_over_theta C* [ sum(i=1:m; y^i*cost_1(theta'f^i) + (1-y^i)*cost_0(teta'f^i))  +  0.5*sum(all_squared_thetas EXCEPT BIAS) ]
+# BIAS/VARIANCE TRADEOFF: C AS 1/lambda intuition was: large C=>higher variance, lower C=>higher bias. SIGMA is also important, works the opposite: larger sigma=>higher bias
+
+
+
+### SVM: PRACTICAL USAGE
+
+*** BECAUSE OF THE LANDMARK STRATEGY, m=n 
+*** IS POSSIBLE TO USE KERNELS WITH LOG REG BUT THEIR OPTIMIZATION BECOMES CPU EXPENSIVE, THEY FIT ESPECIALLY GOOD WITH SVMs.
+*** THE REGUL.TERM IS ALSO WRITTEN AS theta'*theta-1, BUT FOR EFFICIENCY IS IMPLEMENTED AS theta'*(M*theta). This allows efficiency for very big m
+*** HIGHLY RECCOMENDED NOT TO CUSTOM IMPLEMENT MINIMIZATION, USE LIBRARIES (eg liblinear, libsvm...)
+*** IMPORTANT: PERFORM FEATURE SCALING BEFORE USING THE GAUSSIAN KERNEL IF NECCESSARY!! because if the dimensions in ||x-l||^2 are different, some are going to become irrelevant
+*** REGARDING CHOICE OF KERNEL: normally linear of gauss. Not every fn is a valid k!! must satisfy MERCER'S THEOREM because of the numeric optimization in the design of SVMs.
+    -very rarely used, but exist for example polynomial kernel k(x,l)=(theta'x+a)^b, or more esoteric ones: [string, chi-square, histogram intersection] kernel.
+    -kernels score the similarity between two elements, so to compare 2 strings you may end up using the string kernel... STFG
+
+# choice of C, choice of kernel (linear kernel: predict y=1 if theta'x>=0, good for n large m small. if gaussian CHOOSE SIGMA, good for n small m large).
+# multiclass classification: often built-in. train one SVM per class, and get the corresponding theta vectors. make prediction with all and take the biggest one.
+
+### WHEN TO USE LogReg, SVM, NN: is often unclear, and as we saw depends a lot on the data, and the debugging/design skills, but some guidelines are:
+    -if n is large relative to m (f.e. n=10000, m€(10,1000)): use logReg or SVM without a kernel (both are similar).
+    -if n small, m intermediate (f.r. n€(10, 1000), m€(10, 10000)) use SVM with gaussian kernel.
+    -if n small, m large, SVM with gaussian become expensive (lets say m>>50000): create/add more features and then use LogReg or SVM without kernel.
+    -NNs work well with all of them but may be slower to train.
+
+
+
+############################################################################################
+########### WEEK 8, PART 1: CLUSTERING
+############################################################################################
+
+This week, you will be learning about unsupervised learning. While supervised learning algorithms need labeled examples (x,y), unsupervised learning algorithms need only the input (x). You will learn about clustering—which is used for market segmentation, text summarization, among many other applications.
+We will also be introducing Principal Components Analysis, which is used to speed up learning algorithms, and is sometimes incredibly useful for visualizing and helping you to understand your data.
+
+SUPERVISED WAS: given a set of labels, fit an hypotesis to it.
+UNSUPERVISED IS: given unlabeled data, find some structure in it for us. One of them is clustering:
+*** IMPORTANT: here there is no x_0=1, so all examples are n-dimensional, NOT N+1
+
+### CLUSTERING: find clusters. Good for market segmentation, social network analysis, organize computer clusters, astronomical data analysis.
+
+### THE K-MEANS ALGORITHM: by far the most widely used clust. algo:
+    Input: K (number of clusters you want to find), and the training set {x_1, x_2...}
+    ALGO:
+    randomly initialize the K cluster centroids µ_1 to µ_k // Like the x samples, they are n-dimensional vectors
+    repeat{
+          for i=1:m {c^i = closest k to x^i} // the m-dimensional C array has the current closest k-index for each x
+          for k=1:k {mu_k:= average of all points assigned to k} // based on the current assignments in C: sum all and divide by quantity
+}
+
+# k-means for non separated clusters: "what you can do is look at the data and try to design..." ????
+
+
+### OPTIMIZATION OBJECTIVE: the mean of the squared distance between each point and its closest centroid: J(C, MU)= 1/m*sum(i=1:m; ||x^i-µ_(c^i)||^2) minimize C, MU.
+                            THIS COST FN IS ALSO CALLED THE DISTORTION COST FN. the first part of the algo minimizes the Cs, the second minimizes the MUs.
+
+
+### RANDOM INITIALIZATION: K<m, pick K random training examples and set the MUs to them. For small K, the local minimums make very big difference, so repeat 10 to 100 times and pick the lowest J. for bigger K, not that bad.
+### CHOOSING NUMBER OF CLUSTERS: to be honest there isnt a good way to do this automatically=>by hand. BECAUSE THERE IS AMBIGUITY.
+    # elbow method: "is worth a shot, but don't have high expectations:often unclear". Plot the J as function of K: if J drops quickly and then "stabilizes" there is elbow: the optimal degree of compressing.
+    # by hand because there are many later/downstream purposes (like tshirt size market segmentation) that arent reflected in the data/algo.
+
+
+############################################################################################
+########### WEEK 8, PART : DIMENSIONALITY REDUCTION
+############################################################################################
+this is another type of unsupervised learning process. we show the motivations:
+
+### MOTIVATION I: DATA COMPRESSION. Not only to use less memory, also speed up the learning algos:
+    -there are dimensions highly correlated, that fit good to a regression. So compress the dimensions to a new one (f.e. experience+talent=>skills) and the resulting samples will have one dimension less.(x1,x2)->z1
+### MOTIVATION II: VISUALIZATION: compressed dimensions kind of conserv an higher abstract meaning
+
+
+### PRINCIPAL COMPONENT ANALYSIS (PCA): by far the most common algo for dim. reduction. IMPORTANT TO SCALE FEATURES AND DO MEAN NORMALIZATION BEFORE PCA.
+    -reduce from n-dim tok-dim: find k vectors onto which project the data, so that the PROJECTION ERROR is minimal. This is not LinReg: there is no y, all x are equal, and we project instead of the "vertical" y-h(x).
+    -algo:
+        1) preprocess: calculate mean 1/m*sum(all x), and replace each x with x-mean. optionally feature scaling (dividing by its own range, or the standard deviation...) so all dimensions have comparable values.
+        2) compute covar. matrix SIGMA = 1/m*sum(i=1:m; x^i*(x^i)'), VECTORIZED IMPLEMENTATION= (1/m)*X'*X // given the n dimensional x, SIGMA is an nxn square matrix.
+        3) compute eigenvectors of SIGMA: svd or eig, svd is more numerically stable. Theyre different but both work because SIGMA is simmetric-positive-semidefinite.
+           [U, S, V]= svd(sigma); // IN OTHER ENVIRONMENTS: find a library that computes the svd (SINGULAR VALUE DECOMPOSITION).
+        4) from the U matrix, take k columns: Ureduce = U(:,1:k);
+        5) z = Ureduce’*x  // kx1= kxn*nx1 z is the reduced expression of x
+
+### RECONSTRUCTION: x_approx= Ureduce*z // nxk*kx1= nx1 
+
+### CHOOSING K (NUMBER OF PRINCIPAL COMPONENTS): being x_approx the projection in less dimensions:
+    -average squared projection error: 1/m*sum(i=1:m; ||x^i-x_approx^i||^2)
+    -total variation in the data: 1/m*sum(i=1:m; ||x^i||^2)
+    CHOOSE K TO BE THE SMALLEST VALUE SO THAT avg_sqd_pr_err/total_var <= 0.01, which means 99% OF THE VARIANCE IS RETAINED. as low as 85% would be fairly typical
+    how? you could loop starting with k=1 and each time compute one more dimension, and check the value of the formula. But this is equivalent:
+         Take the S matrix of svd, is a diagonal mat. The formula is equivalent, for given k, to:  sum(i=1:k; S_ii)/sum(i=1:n;Sii)>=0.99 (for 99% of variance retained.)
+         So you only need to compute svd ONCE, then gradually increase k until you reach the desired ratio. Then compress.
+
+### PCA FOR SUPERVISED LEARNING SPEEDUP: one of the main usages.
+    1) extract inputs: unlabeled "x"s with many dimensions
+    2) apply PCA  ONLY TO THE TRAINING SET to get the compressed "z"s
+    3) associate the z to their respective y and apply superv. learning to get hypothesis h_theta(z).
+    4) now with any x, first get the corresponding z and then pass it to h(z) to get hyp.
+
+### BAD USE OF PCA: TO PREVENT OVERFITTING, because less dimensions.
+    This may work ok, but use regularization instead! is at least as good for high variance retains, and REGARDS THE y LABELS which may contain valuable info. PCA ignores them.
+### ALSO, PREVENT OVERUSE! AT FIRST TRY YOUR ML WITHOUT COMPRESSING, AND APPLY PCA ONLY IF STRONG REASON TO BELIEVE WITH PCA IS GOING TO GET BETTER.
+
+### BETTER VISUALIZATION FROM 3D TO 2D: the PCA projection can be thought of as a rotation that selects the view that MAXIMIZES THE SPREAD OF THE DATA, which often corresponds to the "best" view.
+
+
+
+
+
+############################################################################################
+########### WEEK 9, PART 1: ANOMALY DETECTION
+############################################################################################
+
+### Problem motivation: given a x-dataset, develop a model for further x to predict p(x)=probability of x to be anomalous (if p(x)<epsilon).
+    Usages? fraud detection, manufacturing, monitoring computers in datacenter...
+### Gaussian distribution: x~N(mu, sigma^2) means x is normal-distributed with parameters(..), which means P(x; mu, sigma)= 1/(sqrt(2*pi)*sigma)*exp(-(x-mu)^2/(2*sigma^2))
+    -parameter estimation, given m samples: mu=1/m*sum(i=1:m; x^i), variance=sigma^2 = 1/m*sum(i=1:m; (x^i-mu)^2) SOMETIMES 1/(m-1) IN THE VARIANCE?? IGNORE
+
+### MODEL FOR DENSITY ESTIMATION: given x€R^n, we assume each dimension is independent (works as fine even if they arent), and normal distributed. That means, each x_i~N(mu_i, sigma_i^2)
+    AND THEREFORE THE PROBABILITY OF X IS THE MULTIPLICATION OF ITS COMPONENTS: p(x)=p(x1;mu1,sigma1^2)*p(x2;mu2,sigma2^2)*...* until n= PROD(j=1:n, p(x_j; mu_j, sigma_j^2))
+    -THE ALGO LOOKS LIKE THIS:
+         1) choose j features that may be indicative of anomaly
+         2) calculate mu and sigma^2 for each anomaly => VECTORIZED: 1/m*sum(i=1:m, x^i), sigma??
+         3) given new example, compute p(x)=PROD(etc)
+         4) anomaly if p(x)<epsilon
+
+### EVALUATING AN ANOM.DETEC.SYS: given labeled data(y=1->anomalous), take the unlabeled x and split it: training set (without y, all or most of the x should be NOT anomalous), cv and test set(with y)
+    f.e. given 10000 good engines and 20 flawed: training=6000good, cv and test= 2000good 10 flawed each. So:
+         1) fit p(x)to the training set
+         2) predict y on a cv/test example
+         3) evaluate (true/false pos/neg)=>precision/Recall=>f1-score
+         4)can also use cv to choose parameter epsilon(trying many, pick the one that maximizes f1score)
+
+*** with this LABELED SAMPLES, we get closer to supervised learning... next video:
+### SUPERV. LEARNING VS. ANOMALY DETECTION:
+    -ANOMALY: few positives(0-20 is normal), and MANY negatives: "different types of anomalies, and few examples. impossible to learn and prevent future anomalies from the samples".
+    -SUPERV: large number of both: enough positive samples for the algo to learn what positives are like.
+    So, fraud cases are in proportion "unusual", and creative, so superv is unpractical. Better to learn how "normal" is, and detect anomalies.This may change if we have lots of traffic/fraud cases.
+
+### CHOOSING FEATURES: this is very relevant for the performance.
+    1)non-gaussian features: may work OK anyway, but plot them and try transformations like log, sqrt... to make them look more gaussian.
+    2)features with very high var: anomalies buried between correct samples: try to examine those and come up with new features that help distinguishing, f.e. CPUload/networkTraffic for servers
+
+### MULTIVARIATE GAUSSIAN DIST: the "independent/product model" that we choose allows shifting and shrinking in each dimension. BUT ALWAYS IN ORTHOGONAL DIRECTIONS, no "diagonals" can be drawn.
+That is, all covariances between different components are interpreted as zero, which can be problematic (f.e: two variables draw a "diagonal elliptic cloud", and we try to fit a vert/horiz. one).
+so given mu vector and SIGMA covar matrix: P(x; mu, SIGMA)= 1/((2Pi)^(n/2)*det(SIGMA)^0.5)*exp(-0.5*(x-mu)'*SIGMA^-1*(x-mu))
+Thus if in 2D we have f.e. mu=[0;0]  SIGMA=[1,0;0,1] that would be standard. changing the 1s in SIGMA would make orthogonal ellipses, changing mu would shift. THE MATRIX IS SYMMETRIC,so both zeros
+must change to the same value, between -1 and 1. That would be the correlation coefficient. In the other model, SIGMA HAS ONLY THE VARIANCES OF EACH DIMENSION IN THE DIAGONAL.
+
+### ANOMALY DETECTION USING THE MULTIVARIATE GAUS.DIST: mu=1/m*sum(i=1:m;x^i)   SIGMA=1/m*sum(i=1:m; (x^i-mu)*(x^i-mu)')
+
+*** MULTI VS NORMAL:
+    -MULTI: captures correl. automatically, but sigma inverting scales bad with n, and may be impossible if m<n (should be about m>=10n) and redundant(lin. dependent) features.
+    -NORMAL: more used, works even with small m. Compromise: try to make up features like CPU/Traffic to capture specifical correlations.
+
+
+############################################################################################
+########### WEEK 9, PART 2: RECOMMENDER SYSTEMS
+############################################################################################
+
+### PROBLEM FORMULATION:
+    n_u: number of users     n_m: number of movies
+    r(i, j): 1 if user j has rated movie i
+    y(i, j): rating by j to movie i (defined only if rij=1)
+The problem is: users have rated normally a tiny amount of movies, so GUESS WHAT WOULD BE THE RATING FOR AN UNDEFINED SLOT based on existing data.
+
+
+### CONTENT-BASED RECOMENDATION ALGO: given WE HAVE INFO OF THE FEATURES OF EACH FILM (f.e. romance, action...)
+    we learn for each user the THETAS, AND WE ADD BIAS x_0=1. And then for each movie predict rating with theta'*x.
+    f.e "cute love" has x=[1;1;0](bias,romance,action) and Alice rates THETA=[0,5,0] (no bias, 5 for romance, 0 for action). The rating prediction for alice+cute love is 5*0.99=4.95
+    TO LEARN THETA, LINEAR REGRESSION: minimize THETA in J(theta)=1/2(no m here)*sum(i:all_rated_movies; (theta'*x-y)^2) + lambda/2(no m here)*sum(all_thetas_except_bias^2) DO THIS FOR EACH USER.
+             general, for all thetas: minimize(theta1...theta(n_m)) 0.5*sum(j=1:n_u; sum(i=rated_mvs; (theta_j'*x^i-y^(i,j))^2)) + lambda/2*sum(j=1:n_u; sum(k=1:n; (theta_k^j)^2))
+    we ignore the m, because "all rated movies" is taken as a constant and therefore the minimization objective remains same.
+    GRAD DESC UPDATE: THETA_k=THETA_k-alpha*sum(i:rated_mvs; (h(x)-y)*x_k+ [if k!=0 lambda*theta_k ])
+*** the name is content-based because we have this features about the content of the movies. for many we don't have or its difficult. Next algo deals with it:
+
+### COLLABORATIVE FILTERING: does "feature learning" by itself: WE HAVE THETA AND Y, WE WANT TO LEARN X.
+    first we ask the users to rate the features they like most, we get their thetas from them.
+    then we want to get the x for each rated movie, so that the difference between each theta'*x and the given rating is minimal.
+# objective: minimize x over 0.5*sum(i:rated_mvs; (theta'*x-x)^2)+ lambda/2*sum(all_x_except_bias^2)
+             for all x: minimize(x^1...x^(n_m)) 0.5*sum(i=1:n_m; sum(j=rated_mvs; (theta_j'*x^i-y^(i,j))^2)) + lambda/2*sum(i=1:n_m; sum(k=1:n; (x_k^i)^2))
+*** so what to have first? x or theta? turns out that guessing theta with random and then iterating theta->x->theta->x... converges to reasonable values.
+    this is basic notion, a more efficient approach next.
+
+### COL. FILT. ALGO: mix together content-based and rating-based, and instead going back and forth, minimize both x and thetas simultaneously
+    minimize(all x and all thetas) in J(x..x, thetas)=0.5*sum(all_rated(i,j); theta_j'*x^i-y^(i,j)^2) + lambda/2*sum(all x and thetas squared)
+*** WE ELIMINATE HERE THE BIAS (x_0=1, theta_0) CONVENTION, SINCE THIS CODEPENDENCE ALLOWS THE ALGO TO "PUT" A BIAS TO ALL X DIMENSIONS=>WE REGULARIZE EVERYTHING
+    1) initialize all x and thetas to small random values (like NNs)
+    2) minimize J using grad. desc. or an advanced optimization algo. e.g. for every j€[1...n_u], i€[1,...n_m]:
+               x_k^i = x_k^i-alpha* [sum(j if r(i,j)=1; (theta^j'*x^i - y^(i,j))*theta_k^j) + lambda*x_k^i]   //// SHOULDNT IT BE ...y^(i,j))*x_k^i???
+               theta_k^j = x_k^i-alpha* [sum(i if r(i,j)=1; (theta^j'*x^i - y^(i,j))*x_k^i) + lambda*x_k^i]   //// SHOULDNT IT BE ...y^(i,j))*theta_k^j???
+    3) for a user with parameters theta and movie with (learned) features x, predict a star rating of theta'*x
+
+
+### vectorized impl: this algo is also called LOW RANK MATRIX FACTORIZATION, because the matrix of predictions X*THETA' is a low rank matrix, being:
+    -Y= the matrix of all ratings: each row is a movie, each column a user.
+    -X= the matrix of all movie features, each row is a movie.
+    -THETA= the matrix of all user parameters, each row is a user.
+    -X*THETA'= the matrix of all predictions, same dimensions as the Y matrix.
+
+### USE LEARNED FEATURES IN ORDER TO FIND RELATED MOVIES: for each product we learn a set of features (this set may be abstract and the features difficult to describe, but relevant).
+    problem: how to find movies j related to movie i? get the minimal distances between their vectors ||x_j-x_i||
+
+
+### MEAN NORMALIZATION: preprocessing step for recom. system. Problem: if a user didnt rate anything, his Y-column is null, and his thetas will minimize to zero. SO FOR THOSE USERS,
+THE ALGO WILL PREDICT ZERO RATING FOR EACH MOVIE SINCE theta'*x. This doesnt make much sense, and difficults recommending. SOLUTION:
+    1) for each movie i, get the mean_i of its GIVEN ratings sum(ratings)/#ratings
+    2) preprocess matrix Y, substracting the mean for each movie
+    3) then for each movie, predict (theta'*x_i)+mean_i // since we originally substracted the mean, we add it back
+    4) users with no ratings will now "predict" the mean of the movie, what makes much more sense than zero.
+    there are also algos that mean-normalize the columns, but taking care of a user that didnt rate anything seems more important than taking care of a movie that nobody rated.
+
+
+
+
+############################################################################################
+########### WEEK 10: LARGE SCALE MACHINE LEARNING
+############################################################################################
+
+### LEARNING WITH LARGE DATASETS: huge datasets are usual and sums over m can become expensive. so FIRST CHECK LEARNING CURVES, to adapt modell and m at best, before optimizing.
+
+### STOCHASTIC GRADIENT DESCENT: in the "orthodox" (BATCH) one, where we do alpha*sum(m elements) in each step, so if we need many steps to converge, we sum over all many times.
+the stoch. grad. descent refits the parameters after each sample, hoping that  (if we shuffle them) this will tend to the optimum. EXAMPLE WITH LINEAR REG:
+    1) cost(theta, (x^i, y^i))=0.5*(h(x^i)-y^i)^2  // see here we define the cost for each sample, instead of the J(theta) over all the training set.
+    2) Jtrain(theta)= 1/m*sum(i=1:m; cost(theta,(x^i, y^i)))  // since we defined the square diff. in the cost, the J is here just the mean of all costs
+    3) RANDOMLY SHUFFLE DATASET
+    4) REPEAT K TIMES {for i=1:m; and for each j€[0...n]; {theta_j=theta_j-alpha*(h(x^i)-y^i)*x_j}} // the (h.. term can be shown to be the derivate of the cost.
+So instead of looking all samples before taking the step, here we move after each sample. It doesnt converge, wanders around a region close to optimal, but thats often ok.
+commonly the whole m loop can be repeated 1 to 10 times, depends: if the set is very large and consistent one iteration or less can be enough
+
+### MINI-BATCH GRADIEN DESC: instead of take step after ALL nor after ONE, we take it after "b" examples, where b is the "mini-batch size". usually b=10, b€[2-200]
+    so if b=10, theta_j= theta_j - (alpha/10)*sum(k=i:i+10; (h...)) for every j. THIS CAN BE MUCH MORE EFFICIENT THAN STOCH. IF WE VECTORIZE COMPUTATION OVER b.
+
+### STOCHASTIC GRAD DESC CONVERGENCE: how check if OK, finetune alpha? DURING LEARNING, every k iterations (f.e. 1000) plot cost(theta,(x,y)) averaged over the last 1000 examples.
+    this should show a learning curve that decreases and kind of stabilizes. If too noisy, increase k. If diverges, reduce alpha.
+    -ALPHA IS TYPICALLY  HELD CONSTANT. To help convergence, can slowly decrease, eg: alpha=const1/(const2+iterNumber). This isnt used that often bc is more complexity and slows down.
+
+### ONLINE LEARNING: For example, we offer a price to a user (x=user demographics + offered prize), and he accepts or not(y=1 or y=0). The algo would look like:
+while True {get(x,y)from user; update theta using (x,y): theta_j=thetaj-alpha(h(x)-y)*x_j (for all js)}. Here we learn from a sample and then never use it again.
+This makes sense for very big webs, because if you have free access to that much data, may be worth to look to one sample only once. This algo ADAPTS TO ONGOING CHANGES IN THE USER PREFERENCES.
+#PREDICTED CTR (click-through rate): LEARN P(y=1|x;theta). Given a search (f.e. "android phone 1080p"), extract a feature vector x (matching words, product features...), and offer
+links that have the highest P(y=1), being y=1 when the user clicks on the given link. This is also online, bc the user types, and becomes 10 suggestions based on theta. Those are (x,y)
+training tuples (with y=1 if he clickes), that are used to further learn theta, and then thrown away.
+*** this is very SIMILAR TO STOCH GRAD DESC, but throwing away each sample instead of scanning through a training set.
+
+### MAP-REDUCE [jeffrey dean , sanjay ghemawat] AND DATA PARALLELISM: this algos run on one single PC, s
+ometimes its not OK nor possible (around m=400million).
+    Taking the batch grad.desc algo: theta_j=theta_j-alpha*sum(i€m; (h(x)-y)*x_j), DIVIDE THE SUM OVER ALL M IN K COMPUTERS, DIVIDING WORKLOAD. you get [temp1... temp_k] results.
+    FINALLY ADD THEM LIKE THIS: theta_j=theta_j-alpha*[temp1+temp2...+tempk], what is equivalent to the batch one. This works for every algo based on summations over the training set.
+# MULTI-CORE MACHINES: pretty much the same as multi-pc, but no network latencies. If you use numerical algebra library that parallelizes, a good vectorized batch implementation can be enough.
+
+
+
+############################################################################################
+########### APPLICATION EXAMPLE: FOTO OCR (optical character recognition)
+############################################################################################
+
+this project will be an excuse to show some more interesting ML details, and to show the workflow "pipeline" for big ML projects, either single programmed or in team.
+OCR is still one of the most challenging ML problems, and has many applications (read loud for blind people, self-driven cars...)
+### PROBLEM DESCRIPTION AND PIPELINE: this is a ML pipeline: image->text detection-->character segmentation-->character classification (would be also further steps like C1ean1ng->Cleaning)
+
+### SLIDING WINDOW: the rectangle proportions of text (ASPECT RATIO) may differ a lot, so lets regard pedestrian detection: we have a training set of positive and negative images (f.e 82x36)
+of pedestrians, and we train the machine (1, 10 or more thousands are normal). Then we SCAN AN IMAGE by taking a patch of a size, adapt it to 82x36 and sliding it with the STEP-SIZE/STRIDE.
+Then we try patches of bigger size, and so on.
+# FOR TEXT: we apply little patches associated to a probability ofthere being text. Then we "expand" the high-prob regions by connecting them if they are close. This will convert isolated
+high-prob squares into longer regions. Finally we filter the regions whose aspect ratio doesnt look like text, and square with margin the fitting ones.
+          # then 1D-character segmentation: we have positive examples for windows that are between 2 characters, and try to split the text shifting the window horizontally.
+          # then character-classification (weve done that with NNs).
+
+### ARTIFICIAL DATA SYNTHESIS: combining different fonts and algorithmic transformations we get unlimited supply of labeled data. DISTORTIONS SHOULD BE REPRESENTATIVE OF THE REALITY. IT
+    DOESNT HELP TO ADD PURELY RANDOM/MEANINGLESS NOISE TO THE DATA.
+*** 1) make sure you have a low bias model, before expanding data.
+    2) how hard would it be to have 10x more data? normally not that hard.
+    3) how many #hours would take to manually collect/label? --> CROWDSOURCING hiring people to label stuff for low prices (e.g. AMAZON MECHANICAL TURK)
+
+### CEILING ANALYSIS: WHAT PART OF THE PIPELINE TO WORK ON NEXT: one of the most valuable resources is the time of the developer team.
+    we have some test set and pass it through the pipeline. Using whatever metrics you choose, measure overall performance and THEN MANUALLY BYPASS THE DIFFERENT PARTS, MEASURING OVERALL
+    PERFORMANCE AFTER EACH. This allows us to "emulate" a 100% accuracy on each part, and to see HOW BIG THE IMPACT IN THE OVERALL PERFORMANCE IS. So we can focus on improving the parts
+    that bring best overall improvement. This sets the ceiling analysis assuming we manually do perfect.
+*** he means to improve each step manually in ACCUMULATIVE SEQUENCE, so we reach an overall of 100%, f.e: [79, 81, 97, 100] the second step isnt worth it.are there unregarded interdependencies?
+
+
+############################################################################################
+########### SUMMARY
+############################################################################################
+
+# SUPERVISED LEARNING: labeled data (linear reg, log reg,  NNs, SVMs)
+# UNSUPERVISED LEARNING: unlabeled data (k-means, PCA, anomaly detection)
+# SPECIAL APPLICATIONS/TOPICS (recommender systems, large scale ML)
+# ADVICE ON BUILDING A ML SYSTEM: (normalization, regularization, vectorization, bias/variance, ceiling analysis, error analysis, learning curves, what to do next/diagnostics/debugging, numerical testing).
+consider yourserlf expert in ML
+
+
+############################################################################################
+########### CERTIFICATE LINK
+############################################################################################
+https://www.coursera.org/account/accomplishments/records/F3RVXX8FMDGJ
